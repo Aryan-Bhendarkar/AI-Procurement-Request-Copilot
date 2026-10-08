@@ -17,11 +17,11 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: pip
       - run: python -m pip install -r requirements.txt
-      - name: Preflight (no API key needed)
+      - name: "Preflight (no API key needed)"
         run: python verify_setup.py
-      - name: Unit tests (offline: scripted fake LLM, no network)
+      - name: "Unit tests (offline, scripted fake LLM, no network)"
         run: python -m unittest discover -s tests
-      - name: Engine-only evaluation (deterministic, free)
+      - name: "Engine-only evaluation (deterministic, free)"
         run: python evals/run_comparison.py --archs engine --fresh
         env:
           VENDOR_RISK_AUTOSTART: "1"
