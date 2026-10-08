@@ -1,0 +1,27 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - run: python -m pip install -r requirements.txt
+      - name: Preflight (no API key needed)
+        run: python verify_setup.py
+      - name: Unit tests (offline: scripted fake LLM, no network)
+        run: python -m unittest discover -s tests
+      - name: Engine-only evaluation (deterministic, free)
+        run: python evals/run_comparison.py --archs engine --fresh
+        env:
+          VENDOR_RISK_AUTOSTART: "1"
